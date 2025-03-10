@@ -27,17 +27,20 @@ func StartRepl(c *config) {
 		scanner.Scan()
 		commands := scanner.Text()
 		cl_comands := CleanCommands(commands)
-		if len(cl_comands) == 1 {
-			fmt.Println("add a city")
+		if len(cl_comands) == 0 {
+			fmt.Println("Add a valid command")
 			continue
 		}
 		cmd_1 := cl_comands[0]
-		args := cl_comands[1]
 		v, exists := getCommands()[cmd_1]
 		if !exists {
 			fmt.Println("This command does not exist")
 		} else {
-			v.callback(c, args)
+			if len(cl_comands) > 1 {
+				args := cl_comands[1]
+				v.callback(c, args)
+			}
+			v.callback(c)
 		}
 	}
 }
@@ -48,6 +51,11 @@ func getCommands() map[string]Cli {
 			name:     "current",
 			descript: "current climate",
 			callback: CurrentCommand,
+		},
+		"exit": {
+			name:     "exit",
+			descript: "exits the program",
+			callback: ExitCommand,
 		},
 	}
 	return commands
