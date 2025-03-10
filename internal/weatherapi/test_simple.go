@@ -14,6 +14,13 @@ func (c *Client) Climate(name ...string) (Current, error) {
 	}
 	n := name[0]
 	url += n
+	var current_climate Current
+	if v, ok := c.Cache.GetC(url); ok {
+		if err := json.Unmarshal(v, &current_climate); err != nil {
+			return Current{}, err
+		}
+		return current_climate, nil
+	}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return Current{}, err
@@ -28,9 +35,11 @@ func (c *Client) Climate(name ...string) (Current, error) {
 	if err != nil {
 		return Current{}, err
 	}
-	var current_climate Current
 	if err := json.Unmarshal(data, &current_climate); err != nil {
 		return Current{}, err
 	}
+
+	c.Cache.AddC(url, data)
+
 	return current_climate, nil
 }
