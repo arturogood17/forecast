@@ -8,7 +8,7 @@ import (
 
 func main() {
 	c := &config{
-		Client: weatherapi.NewClient(5 * time.Second),
+		Client: weatherapi.NewClient(5*time.Second, 1*time.Minute),
 	}
 	StartRepl(c)
 }
