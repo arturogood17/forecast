@@ -32,15 +32,15 @@ func StartRepl(c *config) {
 			continue
 		}
 		cmd_1 := cl_comands[0]
+		var args []string
+		if len(cl_comands) > 1 {
+			args = cl_comands[1:]
+		}
 		v, exists := getCommands()[cmd_1]
 		if !exists {
 			fmt.Println("This command does not exist")
 		} else {
-			if len(cl_comands) > 1 {
-				args := cl_comands[1]
-				v.callback(c, args)
-			}
-			v.callback(c)
+			v.callback(c, args...) // ... los tres puntos desempaquetan los argumentos del slice.
 		}
 	}
 }
