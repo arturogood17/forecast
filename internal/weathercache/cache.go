@@ -42,7 +42,7 @@ func (c *Cache) getC(key string) any {
 
 func (c *Cache) ReapLoopC(interval time.Duration) {
 	t := time.NewTicker(interval)
-	for t.C {
+	for range t.C {
 		c.ReapC(time.Now().UTC(), interval)
 	}
 }
