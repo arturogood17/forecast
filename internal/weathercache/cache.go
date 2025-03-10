@@ -20,12 +20,12 @@ func WCache(interval time.Duration) Cache {
 		cache: make(map[string]ValSet),
 		mu:    &sync.Mutex{},
 	}
-	go c.ReapLoopC(interval)
+	go c.reapLoopC(interval)
 
 	return c
 }
 
-func (c *Cache) addC(key string, val []byte) {
+func (c *Cache) AddC(key string, val []byte) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.cache[key] = ValSet{
@@ -34,20 +34,21 @@ func (c *Cache) addC(key string, val []byte) {
 	}
 }
 
-func (c *Cache) getC(key string) any {
+func (c *Cache) GetC(key string) ([]byte, bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	return c.cache[key].value
+	v, exist := c.cache[key]
+	return v.value, exist
 }
 
-func (c *Cache) ReapLoopC(interval time.Duration) {
+func (c *Cache) reapLoopC(interval time.Duration) {
 	t := time.NewTicker(interval)
 	for range t.C {
-		c.ReapC(time.Now().UTC(), interval)
+		c.reapC(time.Now().UTC(), interval)
 	}
 }
 
-func (c *Cache) ReapC(now time.Time, interval time.Duration) {
+func (c *Cache) reapC(now time.Time, interval time.Duration) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	for k, v := range c.cache {
